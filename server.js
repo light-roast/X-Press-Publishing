@@ -15,6 +15,9 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const apiRouter = require('./src/api/api');
+app.use('/api', apiRouter);
+
 // Middleware to enable CORS (Cross-Origin Resource Sharing)
 app.use(cors());
 
