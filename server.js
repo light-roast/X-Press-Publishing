@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+module.exports = app;
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const errorHandler = require('errorhandler');
