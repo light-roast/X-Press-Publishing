@@ -15,9 +15,6 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const apiRouter = require('./src/api/api');
-app.use('/api', apiRouter);
-
 // Middleware to enable CORS (Cross-Origin Resource Sharing)
 app.use(cors());
 
@@ -27,7 +24,9 @@ app.use(morgan('dev'));
 // Middleware for handling errors
 app.use(errorHandler());
 
-// Your routes and other application logic go here...
+
+const apiRouter = require('./src/api/api');
+app.use('/api', apiRouter);
 
 
 // Start the server
