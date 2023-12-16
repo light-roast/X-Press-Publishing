@@ -3,5 +3,5 @@ const apiRouter = express.Router();
 const artistsRouter = require('./artists');
 
 
-apiRouter.use('./artists', artistsRouter);
+apiRouter.use('/artists', artistsRouter);
 module.exports = apiRouter;
