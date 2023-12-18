@@ -37,7 +37,7 @@ artistsRouter.get('/', (req, res, next) => {
       }
   });
 
-  artistsRouter.post('/', (req, res, next) => {
+artistsRouter.post('/', (req, res, next) => {
     const requestData = req.body;
     if(requestData.artist.name && requestData.artist.dateOfBirth && requestData.artist.biography){
       requestData.artist.is_currently_employed = requestData.artist.is_currently_employed === 0 ? 0 : 1;
@@ -63,5 +63,42 @@ artistsRouter.get('/', (req, res, next) => {
       res.status(400).send('Request not processed successfully. Incomplete data in body req.');
     }
   });
+
+artistsRouter.put('/:artistId', (req, res, next) => {
+  const artistId = req.params.artistId;
+  const requestData = req.body;
+  if (
+    requestData.artist &&
+    requestData.artist.name &&
+    requestData.artist.dateOfBirth &&
+    requestData.artist.biography
+  ) {
+    requestData.artist.is_currently_employed = requestData.artist.is_currently_employed === 0 ? 0 : 1;
+    db.run('UPDATE Artist SET name = $name, date_of_birth = $birth, biography = $bio, is_currently_employed = $employed WHERE Artist.id = $artistId', 
+    {$name: requestData.artist.name,
+     $birth: requestData.artist.dateOfBirth,
+     $bio: requestData.artist.biography,
+     $employed: requestData.artist.is_currently_employed,
+     $artistId: artistId
+    }, (err) => {
+      if(err) {
+        next(err);
+        res.status(500).send('Internal Server Error. Update failed.');
+        return;
+      }
+      db.get('SELECT * FROM Artist WHERE id = $artistId', {$artistId: artistId}, (error, row) => {
+        if (error) {
+          console.error(error.message);
+          next(error);
+          res.status(500).send('Internal Server Error. Failed to retrieve updated artist.');
+        } else {
+          res.status(200).send({ artist: row });
+        }
+      })
+    })
+  } else {
+    res.status(400).send('Bad Request. Incomplete data in body req.');
+  }
+});
   
 module.exports = artistsRouter;
