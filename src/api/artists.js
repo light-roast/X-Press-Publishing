@@ -36,5 +36,32 @@ artistsRouter.get('/', (req, res, next) => {
         res.status(404).send();
       }
   });
+
+  artistsRouter.post('/', (req, res, next) => {
+    const requestData = req.body;
+    if(requestData.artist.name && requestData.artist.dateOfBirth && requestData.artist.biography){
+      requestData.artist.is_currently_employed = requestData.artist.is_currently_employed === 0 ? 0 : 1;
+      db.run('INSERT INTO Artist (name, date_of_birth, biography, is_currently_employed) VALUES ($name, $birth, $bio, $employed)', 
+      {$name: requestData.artist.name, 
+        $birth: requestData.artist.dateOfBirth, 
+        $bio: requestData.artist.biography, 
+        $employed: requestData.artist.is_currently_employed
+      }, function(err) {
+        if (err) {
+          console.error(err.message);
+          next(err);
+        }
+        console.log(`A new artist has been added with ID ${this.lastID}`);
+        db.get('SELECT * FROM Artist WHERE id = $id', 
+        {$id: this.lastID}, (error, row) => {
+          res.status(201).json({ artist: row});
+        });
+      }
+        );
+        
+    } else {
+      res.status(400).send('Request not processed successfully. Incomplete data in body req.');
+    }
+  });
   
 module.exports = artistsRouter;
