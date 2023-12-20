@@ -95,6 +95,6 @@ seriesRouter.param('seriesId', (req, res, next, id) => {
     }
   });
 
-clear
+
 
 module.exports = seriesRouter;
