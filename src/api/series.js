@@ -1,6 +1,7 @@
 const express = require('express');
 const seriesRouter = express.Router();
 const sqlite3 = require('sqlite3');
+const issuesRouter = require('./issues');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
 seriesRouter.get('/', (req, res, next) => {
@@ -94,6 +95,8 @@ seriesRouter.param('seriesId', (req, res, next, id) => {
       res.status(400).send('Bad Request. Incomplete data in body req.');
     }
   });
+
+  seriesRouter.use('/:seriesId/issues', issuesRouter);
 
 
 
