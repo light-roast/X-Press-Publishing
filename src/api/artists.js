@@ -100,5 +100,26 @@ artistsRouter.put('/:artistId', (req, res, next) => {
     res.status(400).send('Bad Request. Incomplete data in body req.');
   }
 });
+
+
+artistsRouter.delete('/:artistId', (req, res, next) => {
+  db.run('UPDATE Artist SET is_currently_employed = 0 WHERE id = $id', {$id: req.params.artistId},
+  (err) => {
+    if(err) {
+      next(err);
+      res.status(500).send('Internal Server Error. Deletion failed.');
+      return;
+    }
+    db.get('SELECT * FROM Artist WHERE id = $id', {$id: req.params.artistId}, (error, row) => {
+      if (error) {
+        console.error(error.message);
+        next(error);
+        res.status(500).send('Internal Server Error. Failed to retrieve deleted artist.');
+      } else {
+        res.status(200).send({ artist: row });
+      }
+    });
+  });
+})
   
 module.exports = artistsRouter;
